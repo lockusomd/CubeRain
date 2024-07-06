@@ -6,17 +6,27 @@ public class Spawner : MonoBehaviour
     [SerializeField] private Material _material;
     [SerializeField] private Vector3 _spawnPositionMin = new Vector3(0, 0, 0);
     [SerializeField] private Vector3 _spawnPositionMax = new Vector3(0, 0, 0);
-    [SerializeField] private float _scale = 0.25f;
     [SerializeField] private float _repeatRate = 0.1f;
     [SerializeField] private int _poolCapacity = 1000;
     [SerializeField] private int _poolMaxSize = 2000;
+    [SerializeField] private GameObject _cube;
 
     private ObjectPool<GameObject> _pool;
+
+    private void OnEnable()
+    {
+        Cube.Died += SendToPool;
+    }
+
+    private void OnDisable()
+    {
+        Cube.Died -= SendToPool;
+    }
 
     private void Awake()
     {
         _pool = new ObjectPool<GameObject>(
-            createFunc: () => CreateCube(),
+            createFunc: () => Instantiate(_cube),
             actionOnGet: (obj) => ActionOnGet(obj),
             actionOnRelease: (obj) => obj.SetActive(false),
             actionOnDestroy: (obj) => Destroy(obj),
@@ -33,23 +43,6 @@ public class Spawner : MonoBehaviour
     private void GetCube()
     {
         _pool.Get();
-    }
-
-    private GameObject CreateCube()
-    {
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube.transform.position = GetPosition();
-        cube.transform.rotation = GetRotation();
-        cube.transform.localScale *= _scale;
-        cube.AddComponent<Cube>();
-        cube.GetComponent<Cube>().SetPool(_pool);
-        cube.AddComponent<BoxCollider>();
-        cube.GetComponent<Renderer>().material = _material;
-        cube.AddComponent<Rigidbody>();
-        cube.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        cube.SetActive(false);
-
-        return cube;
     }
 
     private void ActionOnGet(GameObject obj)
@@ -76,5 +69,10 @@ public class Spawner : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
 
         return rotation;
+    }
+
+    private void SendToPool(GameObject obj)
+    {
+        _pool.Release(obj);
     }
 }
