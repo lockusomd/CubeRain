@@ -801,8 +801,7 @@ MonoBehaviour:
   _material: {fileID: 2100000, guid: bea6dd5bdaba54829ac5e17264c7ad74, type: 2}
   _spawnPositionMin: {x: -4.5, y: 10, z: -4.5}
   _spawnPositionMax: {x: 4.5, y: 10, z: 4.5}
-  _scale: 0.25
   _repeatRate: 0.1
   _poolCapacity: 1000
   _poolMaxSize: 2000
-  _cube: {fileID: 5093174905729006581, guid: b462f867e016940e1b61a2f728c060f0, type: 3}
+  _prefab: {fileID: 3496317638052319845, guid: b462f867e016940e1b61a2f728c060f0, type: 3}
