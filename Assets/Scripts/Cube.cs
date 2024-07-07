@@ -5,7 +5,6 @@ using System;
 
 public class Cube : MonoBehaviour
 {
-    private ObjectPool<GameObject> _pool;
     private MeshRenderer _meshRenderer;
 
     private bool _isSwitched = false;
@@ -45,11 +44,6 @@ public class Cube : MonoBehaviour
         yield return new WaitForSeconds(UnityEngine.Random.Range(2,5));
 
         Died?.Invoke(gameObject);
-    }
-
-    public void SetPool(ObjectPool<GameObject> pool)
-    {
-        _pool = pool;
     }
 
     public void SwitchOff()
