@@ -18,7 +18,7 @@ public class Spawner : MonoBehaviour
             createFunc: () => Instantiate(_prefab),
             actionOnGet: (cube) => ActionOnGet(cube),
             actionOnRelease: (cube) => cube.gameObject.SetActive(false),
-            actionOnDestroy: (cube) => Destroy(cube),
+            actionOnDestroy: (cube) => Delete(cube),
             collectionCheck: true,
             defaultCapacity: _poolCapacity,
             maxSize: _poolMaxSize);
@@ -63,5 +63,12 @@ public class Spawner : MonoBehaviour
         cube.Died -= SendToPool;
 
         _pool.Release(cube);
+    }
+
+    private void Delete(Cube cube)
+    {
+        cube.Died -= SendToPool;
+
+        Destroy(cube);
     }
 }
