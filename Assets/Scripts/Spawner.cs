@@ -3,7 +3,6 @@ using UnityEngine.Pool;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private Material _material;
     [SerializeField] private Vector3 _spawnPositionMin = new Vector3(0, 0, 0);
     [SerializeField] private Vector3 _spawnPositionMax = new Vector3(0, 0, 0);
     [SerializeField] private float _repeatRate = 0.1f;
@@ -11,25 +10,25 @@ public class Spawner : MonoBehaviour
     [SerializeField] private int _poolMaxSize = 2000;
     [SerializeField] private Cube _prefab;
 
-    private ObjectPool<GameObject> _pool;
+    private ObjectPool<Cube> _pool;
 
     private void OnEnable()
     {
-        Cube.Died += SendToPool;
+        _prefab.Died += SendToPool;
     }
 
     private void OnDisable()
     {
-        Cube.Died -= SendToPool;
+        _prefab.Died -= SendToPool;
     }
 
     private void Awake()
     {
-        _pool = new ObjectPool<GameObject>(
-            createFunc: () => Instantiate(_prefab.gameObject),
-            actionOnGet: (obj) => ActionOnGet(obj),
-            actionOnRelease: (obj) => obj.SetActive(false),
-            actionOnDestroy: (obj) => Destroy(obj),
+        _pool = new ObjectPool<Cube>(
+            createFunc: () => Instantiate(_prefab),
+            actionOnGet: (cube) => ActionOnGet(cube),
+            actionOnRelease: (cube) => cube.gameObject.SetActive(false),
+            actionOnDestroy: (cube) => Destroy(cube),
             collectionCheck: true,
             defaultCapacity: _poolCapacity,
             maxSize: _poolMaxSize);
@@ -45,34 +44,30 @@ public class Spawner : MonoBehaviour
         _pool.Get();
     }
 
-    private void ActionOnGet(GameObject obj)
+    private void ActionOnGet(Cube cube)
     {
-        obj.transform.position = GetPosition();
-        obj.transform.rotation = GetRotation();
-        obj.GetComponent<Renderer>().material = _material;
-        obj.GetComponent<Cube>().SwitchOff();
-        obj.SetActive(true);
+        cube.transform.position = GetRandomPosition();
+        cube.transform.rotation = GetRandomRotation();
+        cube.GetComponent<Cube>().SwitchOff();
+        cube.gameObject.SetActive(true);
     }
 
-    private Vector3 GetPosition()
+    private Vector3 GetRandomPosition()
     {
         float positionX = Random.Range(_spawnPositionMin.x, _spawnPositionMax.x);
         float positionY = Random.Range(_spawnPositionMin.y, _spawnPositionMax.y);
         float positionZ = Random.Range(_spawnPositionMin.z, _spawnPositionMax.z);
-        Vector3 position = new Vector3(positionX, positionY, positionZ);
 
-        return position;
+        return new Vector3(positionX, positionY, positionZ);
     }
 
-    private Quaternion GetRotation()
+    private Quaternion GetRandomRotation()
     {
-        Quaternion rotation = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
-
-        return rotation;
+        return Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
     }
 
-    private void SendToPool(GameObject obj)
+    private void SendToPool(Cube cube)
     {
-        _pool.Release(obj);
+        _pool.Release(cube);
     }
 }

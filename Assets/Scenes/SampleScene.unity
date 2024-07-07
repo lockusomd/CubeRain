@@ -798,7 +798,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 399a15685d6754641945855229a721a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _material: {fileID: 2100000, guid: bea6dd5bdaba54829ac5e17264c7ad74, type: 2}
   _spawnPositionMin: {x: -4.5, y: 10, z: -4.5}
   _spawnPositionMax: {x: 4.5, y: 10, z: 4.5}
   _repeatRate: 0.1

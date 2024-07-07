@@ -4,15 +4,20 @@ using System;
 
 public class Cube : MonoBehaviour
 {
+    [SerializeField] private Material _material;
+
     private MeshRenderer _meshRenderer;
 
     private bool _isSwitched = false;
 
-    public bool IsSwitched => _isSwitched;
+    public event Action<Cube> Died;
 
-    public static event Action<GameObject> Died;
+    private void OnEnable()
+    {
+        _meshRenderer.material = _material;
+    }
 
-    private void Start()
+    private void Awake()
     {
         _meshRenderer = GetComponent<MeshRenderer>();
     }
@@ -40,13 +45,27 @@ public class Cube : MonoBehaviour
 
     private IEnumerator DeleteWithDelay()
     {
-        yield return new WaitForSeconds(UnityEngine.Random.Range(2,5));
+        int minLifetime = 2;
+        int maxLifetime = 5;
 
-        Died?.Invoke(gameObject);
+        yield return new WaitForSeconds(UnityEngine.Random.Range(minLifetime, maxLifetime));
+
+        Died?.Invoke(gameObject.GetComponent<Cube>());
     }
 
     public void SwitchOff()
     {
         _isSwitched = false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (_isSwitched == false)
+        {
+            if(collision.gameObject.TryGetComponent<Plane>(out Plane component))
+            {
+                Switch();
+            }
+        }
     }
 }
