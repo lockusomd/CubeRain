@@ -12,16 +12,6 @@ public class Spawner : MonoBehaviour
 
     private ObjectPool<Cube> _pool;
 
-    private void OnEnable()
-    {
-        _prefab.Died += SendToPool;
-    }
-
-    private void OnDisable()
-    {
-        _prefab.Died -= SendToPool;
-    }
-
     private void Awake()
     {
         _pool = new ObjectPool<Cube>(
@@ -46,6 +36,8 @@ public class Spawner : MonoBehaviour
 
     private void ActionOnGet(Cube cube)
     {
+        cube.Died += SendToPool;
+
         cube.transform.position = GetRandomPosition();
         cube.transform.rotation = GetRandomRotation();
         cube.GetComponent<Cube>().SwitchOff();
@@ -68,6 +60,8 @@ public class Spawner : MonoBehaviour
 
     private void SendToPool(Cube cube)
     {
+        cube.Died -= SendToPool;
+
         _pool.Release(cube);
     }
 }
