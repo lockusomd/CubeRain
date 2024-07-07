@@ -9,7 +9,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private float _repeatRate = 0.1f;
     [SerializeField] private int _poolCapacity = 1000;
     [SerializeField] private int _poolMaxSize = 2000;
-    [SerializeField] private GameObject _cube;
+    [SerializeField] private Cube _cube;
 
     private ObjectPool<GameObject> _pool;
 
@@ -26,7 +26,7 @@ public class Spawner : MonoBehaviour
     private void Awake()
     {
         _pool = new ObjectPool<GameObject>(
-            createFunc: () => Instantiate(_cube),
+            createFunc: () => Instantiate(_cube.gameObject),
             actionOnGet: (obj) => ActionOnGet(obj),
             actionOnRelease: (obj) => obj.SetActive(false),
             actionOnDestroy: (obj) => Destroy(obj),
