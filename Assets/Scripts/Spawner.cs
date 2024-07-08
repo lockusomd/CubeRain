@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -16,7 +17,7 @@ public class Spawner : MonoBehaviour
     {
         _pool = new ObjectPool<Cube>(
             createFunc: () => Instantiate(_prefab),
-            actionOnGet: (cube) => ActionOnGet(cube),
+            actionOnGet: (cube) => SetParameters(cube),
             actionOnRelease: (cube) => cube.gameObject.SetActive(false),
             actionOnDestroy: (cube) => Delete(cube),
             collectionCheck: true,
@@ -26,21 +27,28 @@ public class Spawner : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating(nameof(GetCube), 0.0f, _repeatRate);
+        StartCoroutine(GetCube());
     }
 
-    private void GetCube()
+    private IEnumerator GetCube()
     {
-        _pool.Get();
+        bool isWork = true;
+
+        while (isWork)
+        {
+            _pool.Get();
+
+            yield return new WaitForSeconds(_repeatRate);
+        }
     }
 
-    private void ActionOnGet(Cube cube)
+    private void SetParameters(Cube cube)
     {
         cube.Died += SendToPool;
 
         cube.transform.position = GetRandomPosition();
         cube.transform.rotation = GetRandomRotation();
-        cube.GetComponent<Cube>().SwitchOff();
+        cube.SwitchOff();
         cube.gameObject.SetActive(true);
     }
 
@@ -55,7 +63,10 @@ public class Spawner : MonoBehaviour
 
     private Quaternion GetRandomRotation()
     {
-        return Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
+        float minDegrees = 0f;
+        float maxDegrees = 360f;
+
+        return Quaternion.Euler(Random.Range(minDegrees, maxDegrees), Random.Range(minDegrees, maxDegrees), Random.Range(minDegrees, maxDegrees));
     }
 
     private void SendToPool(Cube cube)

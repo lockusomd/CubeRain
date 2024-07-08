@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using System;
 
+[RequireComponent(typeof(MeshRenderer))]
 public class Cube : MonoBehaviour
 {
     [SerializeField] private Material _material;
@@ -12,30 +13,40 @@ public class Cube : MonoBehaviour
 
     public event Action<Cube> Died;
 
+    private void Awake()
+    {
+        _meshRenderer = GetComponent<MeshRenderer>();
+    }
+
     private void OnEnable()
     {
         _meshRenderer.material = _material;
     }
 
-    private void Awake()
+    public void SwitchOff()
     {
-        _meshRenderer = GetComponent<MeshRenderer>();
+        _isSwitched = false;
     }
 
     public void Switch()
     {
         if (_isSwitched != true)
         {
-            ChangeColor();
+            ChangeRandomColor();
             DeleteCube();
         }
 
         _isSwitched = true;
     }
 
-    private void ChangeColor()
+    private void ChangeRandomColor()
     {
-        _meshRenderer.material.color = new Color(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
+        _meshRenderer.material.color = new Color(GetRandomNumber(), GetRandomNumber(), GetRandomNumber(), GetRandomNumber());
+    }
+
+    private float GetRandomNumber()
+    {
+        return UnityEngine.Random.Range(0, 1f);
     }
 
     private void DeleteCube()
@@ -51,11 +62,6 @@ public class Cube : MonoBehaviour
         yield return new WaitForSeconds(UnityEngine.Random.Range(minLifetime, maxLifetime));
 
         Died?.Invoke(gameObject.GetComponent<Cube>());
-    }
-
-    public void SwitchOff()
-    {
-        _isSwitched = false;
     }
 
     private void OnCollisionEnter(Collision collision)
