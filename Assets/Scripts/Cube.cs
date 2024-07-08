@@ -28,7 +28,7 @@ public class Cube : MonoBehaviour
         _isSwitched = false;
     }
 
-    public void Switch()
+    private void Switch()
     {
         if (_isSwitched != true)
         {
